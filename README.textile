@@ -13,11 +13,16 @@ This class will consume and parse the Chicago Transit Authority alerts system.
 
 h3. How?!
 
-bq. c = CTAAlerts()
-status = c.route_status(route_id='')
-print len(status['route_info'])
-alerts = c.detailed_alerts(route_id='')
-print(len(alerts['alerts']))
+Requires beautifulsoup. I don't like XML and python. 
+
+bq. >>> import ctaalerts
+>>> c = ctaalerts.CTAAlerts()
+>>> c.route_status(route_id='11')
+{'errorcode': 0, 'timestamp': u'20100605 13:04', 'route_info': [{'routestatuscolor': u'06c', 'routestatus': u'Planned Reroute', 'routecolorcode': u'059', 'route': u'Lincoln/Sedgwick', 'serviceid': u'11', 'routeurl': u'http://www.transitchicago.com/riding_cta/busroute.aspx?RouteId=172'}]}
+>>> 
+>>> c.detailed_alerts(route_id='11')
+{'errorcode': 0, 'timestamp': u'20100605 13:04', 'errormessage': None, 'alerts': [{'severity_score': u'37', 'impact': u'Planned Reroute', 'event_end': u'20100607 12:00', 'headline': u'#11 Lincoln/Sedgwick &amp; #49B North Western Temporary Reroute', 'severity_css': u'planned', 'severity_color': u'06c', 'impacted_service': [{'service_name': u'Lincoln/Sedgwick', 'service_backcolor': u'059', 'service_url': u'http://www.transitchicago.com/riding_cta/busroute.aspx?RouteId=172', 'service_textcolor': u'ffffff', 'service_type': u'B', 'service_id': u'11', 'service_type_description': u'Bus Route'}, {'service_name': u'North Western', 'service_backcolor': u'059', 'service_url': u'http://www.transitchicago.com/riding_cta/busroute.aspx?RouteId=200', 'service_textcolor': u'ffffff', 'service_type': u'B', 'service_id': u'49B', 'service_type_description': u'Bus Route'}], 'event_start': u'20100603 10:00', 'major_alert': u'0', 'full_description': u'<div><br  />\r\n<strong><span>How does this affect my trip?</span></strong></div>\r\n<div><b>Southbound #11 Lincoln/Sedgwick and #49B North Western</b> buses will operate via Western and Montrose to Montrose/Lincoln.</div>\r\n<ul type="disc">\r\n    <li><strong>#11 buses</strong> will resume their normal route on Lincoln.</li>\r\n    <li><strong>#49B buses</strong> will operate via Lincoln, Wilson, and Western to end their trips at the Western (Brown Line) station.</li>\r\n</ul>\r\n<div><strong>Northbound #11</strong> buses will operate via Lincoln, Wilson, and Western to Leland, then continue their normal route on Western.</div>\r\n<div>&nbsp;</div>\r\n<div><strong>Northbound #49B</strong> buses&nbsp;will begin their trips at the Western (Brown Line) station, then continue their normal route on Western.</div>\r\n<div><b>Why is service being changed?</b></div>\r\n<div>Buses are rerouted due to the May Festival.</div>', 'alert_id': u'6307', 'alert_url': u'http://www.transitchicago.com/travel_information/alert_detail.aspx?AlertId=6307', 'short_description': u'Buses are rerouted due to the May Festival.', 'tbd': u'0'}]}
+>>> 
 
 ------------
 
