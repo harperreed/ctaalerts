@@ -1,0 +1,26 @@
+h2. CTAAlerts Api Consumer
+ctaalerts.py
+harper reed (harper@nata2.org)
+"http://nata2.org":http://nata2.org
+"@harper":http://twitter.com/harper
+
+------------
+
+h3. What?!
+
+This class will consume and parse the Chicago Transit Authority alerts system. 
+
+h3. How?!
+bq. c = CTAAlerts()
+status = c.route_status(route_id='')
+print len(status['route_info'])
+alerts = c.detailed_alerts(route_id='')
+print(len(alerts['alerts']))
+
+------------
+
+let me know if you have any questions. 
+
+"@harper":http://twitter.com/harper
+harper@nata2.org
+
