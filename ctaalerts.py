@@ -1,6 +1,7 @@
 import urllib  
 import urllib2
 from BeautifulSoup import BeautifulStoneSoup
+import re
 
 
 # ctaalerts.py
@@ -16,6 +17,15 @@ class CTAAlerts:
 
     def __init__(self):
         pass
+
+    # http://love-python.blogspot.com/2008/07/strip-html-tags-using-python.html
+    def remove_html_tags(self, data):
+        p = re.compile(r'<.*?>')
+        return p.sub('', data)
+
+    def remove_extra_spaces(self,data):
+        p = re.compile(r'\s+')
+        return p.sub(' ', data)
 
     def make_request(self, endpoint, values):
         api_url = self.api_root + endpoint
@@ -90,7 +100,7 @@ class CTAAlerts:
 
                 alerts.append( alert)
 
-        detailed_alerts['alerts'] = alerts
+            detailed_alerts['alerts'] = alerts
         return detailed_alerts
 
     def route_status(self, type='', route_id='', station_id=''):
@@ -133,9 +143,52 @@ class CTAAlerts:
 
         return status 
 
+    # welcome to the sketchy part of our presentation. 
+    # the CTA doesn't allow you to grab data about a specific alert
+    # we have to crawl the page and parse... H T M L!
+    # it blows
+    # luckily - we have some beautiful soup. 
+    def crawl_alert_update(self, alert_id=''):
+        url = 'http://www.transitchicago.com/travel_information/alert_detail.aspx?AlertId=' + alert_id
+        req = urllib2.Request(url)
+        response = urllib2.urlopen(req)
+        content = response.read()
+        # this is the dirtiest and most annoying to quickly get this data. 
+        # if you are interested in making this better. pleaes please please do. 
+        content = content.split('<!-- start print content -->')
+        content = content[1].split('<!-- end print content -->')[0]
+        content = content.replace("\r",'')
+        content = content.replace("\t",'')
+        # i am sorry you have to see this. 
+
+        impact_level = content.split('Impact Level:</h5>')[1].split('<h5>')[0]
+        impact_level = self.remove_extra_spaces(impact_level)[1:]
+        impact_level = self.remove_html_tags(impact_level)
+
+        full_description = content.split('Full Description:</h5>')[1].split('</td>')[0]
+        full_description = self.remove_extra_spaces(full_description)
+
+        headline = content.split('<h2>')[1].split('</h2>')[0]
+        headline = self.remove_extra_spaces(headline)[1:]
+
+        duration = content.split('Length:</h5>')[1].split('<h5>')[0]
+        duration = self.remove_extra_spaces(duration)[1:]
+        duration = self.remove_html_tags(duration)
+        duration = duration.split(' to ')
+
+        alert_update = {
+                'impact_level':impact_level,
+                'headline':headline,
+                'duration':duration,
+                'full_description': full_description,
+                
+                }
+
+        return alert_update 
+
 if __name__ == "__main__": 
     c = CTAAlerts()
     status = c.route_status(route_id='')
-    print len(status['route_info'])
-    alerts = c.detailed_alerts(route_id='')
-    print(len(alerts['alerts']))
+    alerts = c.detailed_alerts(route_id='red')
+    alert = c.crawl_alert_update('7362')
+    print alert
